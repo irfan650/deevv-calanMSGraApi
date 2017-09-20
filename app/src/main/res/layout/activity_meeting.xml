@@ -1,0 +1,80 @@
+<!--
+   - Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+   - See LICENSE in the project root for license information.
+  -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MeetingActivity">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/title_text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/titleTextView"
+        android:layout_centerHorizontal="true"
+        android:text="Create a Meeting from here"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="visible" />
+
+    <EditText
+        android:id="@+id/meetingEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/edit_text_min_height"
+        android:layout_below="@+id/descriptionTextView"
+        android:inputType="datetime"
+        android:selectAllOnFocus="true"
+        android:visibility="visible"
+        android:nextFocusForward="@+id/meeting_subject"
+        android:nextFocusDown="@+id/create_meeting"
+        android:nextFocusRight="@+id/create_meeting" />
+
+    <Button
+        android:id="@+id/create_meeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Meeting"
+        android:onClick="onCreateMeetingButtonClick"
+        android:layout_below="@+id/meetingEditText"
+        android:layout_centerHorizontal="true"
+        android:visibility="visible"
+        android:nextFocusForward="@+id/meetingEditText"
+        android:nextFocusUp="@+id/meetingEditText"
+        android:nextFocusLeft="@+id/meetingEditText" />
+
+    <ProgressBar
+        android:id="@+id/meetingProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/meetingEditText"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/conclusionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/create_meeting"
+        android:layout_centerHorizontal="true"
+        android:text="@string/conclusion_text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone" />
+
+</RelativeLayout>
