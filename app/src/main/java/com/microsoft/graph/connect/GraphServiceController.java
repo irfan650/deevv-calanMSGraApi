@@ -131,6 +131,8 @@ class GraphServiceController extends MeetingActivity {
                 for (int i=0; i <= ev.size() - 1; i++ ) {
                     String id = ev.get(i).id;
                     String sbjct = ev.get(i).subject;
+
+                    m.subjct_id.put(sbjct, id);
                     Log.d("Subject, ID", sbjct + "    " + id);
 
                     categoryList.add(sbjct);
@@ -169,48 +171,8 @@ class GraphServiceController extends MeetingActivity {
     }
 
 
-    public void DeleteMeeting(final MeetingActivity m, final String Subject, String start, String end, final ICallback<JsonObject> callback) {
+    public void DeleteMeeting(String subject, String id, final ICallback<JsonObject> callback) {
 
-
-
-        Event event = createEventObject(Subject, start, end);
-        //final IEventCollectionPage eventRequest;
-        final List<Option> options = new LinkedList<>();
-//        options.add(new QueryOption("startdatetime", ";2017-09-19T00:24:06.836Z'"));
-//        options.add(new QueryOption("enddatetime", "2017-09-20T00:24:06.836Z"));
-
-
-        String start1 = "'" + new StringBuilder(start).insert(start.length(), "Z'").toString();
-        String end1 = "'" + new StringBuilder(end).insert(end.length(), "Z'").toString();
-
-        //options.add(new QueryOption("$filter", "Start/DateTime ge '2017-09-18T00:00:00Z' and End/DateTime lt '2017-9-30T23:00:00Z'"));
-
-        options.add(new QueryOption("$filter", "Start/DateTime ge " + start1 + " and End/DateTime lt " + end1));
-
-
-        //ArrayList<String> categoryList = new ArrayList<String>();
-
-
-        mGraphServiceClient.getMe().getCalendar().getEvents().buildRequest(options).get(new ICallback<IEventCollectionPage>() {
-
-
-            @Override
-            public void success(IEventCollectionPage iEventCollectionPage) {
-
-                JsonObject ie = iEventCollectionPage.getRawObject();
-                final  List<Event> ev = iEventCollectionPage.getCurrentPage();
-                ArrayList<String> categoryList = new ArrayList<String>();
-
-
-                for (int i=0; i <= ev.size() - 1; i++ ) {
-                    String id = ev.get(i).id;
-                    String sbjct = ev.get(i).subject;
-                    Log.d("Subject, ID", sbjct + "    " + id);
-
-                    categoryList.add(sbjct);
-                    m.create_spinner(categoryList);
-
-                    if (Subject.equals(sbjct)) {
                         mGraphServiceClient
                                 .getMe()
                                 .getEvents()
@@ -228,18 +190,7 @@ class GraphServiceController extends MeetingActivity {
                                     }
                                 });
                     }
-                }
 
-            }
-
-            @Override
-            public void failure(ClientException ex) {
-
-            }
-        });
-
-
-}
 
 
 

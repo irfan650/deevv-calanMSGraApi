@@ -29,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by irfan on 18.09.17.
@@ -48,8 +50,10 @@ public class MeetingActivity extends AppCompatActivity implements
         private ProgressBar MeetingrogressBar;
         private String mGivenName;
         private TextView mConclusionTextView;
-        public  Spinner spinner1;
+        public  Spinner spinner1, spinner2, spinner3;
         Context context;
+         Map<String,String> subjct_id =  new HashMap<String,String>();
+
 
 
     Button btnDatePicker, btnTimePicker, btnCreate, btnCancel, btnUpdate;
@@ -63,7 +67,7 @@ public class MeetingActivity extends AppCompatActivity implements
     @Override
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_date_picker);
+        setContentView(R.layout.activity_date_picker_spinner);
 
 
         // find the views
@@ -76,6 +80,8 @@ public class MeetingActivity extends AppCompatActivity implements
         /// Spinner
 
           spinner1 = (Spinner) findViewById(R.id.spinner1);
+        spinner2 = (Spinner) findViewById(R.id.spinner2);
+        spinner3 = (Spinner) findViewById(R.id.spinner3);
 //        ArrayList<String> categoryList = new ArrayList<String>();
 //        categoryList.add("1");
 //        categoryList.add("2");
@@ -102,12 +108,12 @@ public class MeetingActivity extends AppCompatActivity implements
             txtDate=(EditText)findViewById(R.id.in_date);
             txtTime=(EditText)findViewById(R.id.in_time);
             txtCreate=(EditText)findViewById(R.id.subj_create);
-            txtCancel=(EditText)findViewById(R.id.subj_cancel);
-            txtUpdate=(EditText)findViewById(R.id.subj_update);
+//            txtCancel=(EditText)findViewById(R.id.subj_cancel);
+//            txtUpdate=(EditText)findViewById(R.id.subj_update);
 
             txtCreate.setText("TEST MEETING");
-            txtCancel.setText("TEST MEETING");
-            txtUpdate.setText("TEST MEETING");
+//            txtCancel.setText("TEST MEETING");
+//            txtUpdate.setText("TEST MEETING");
 
             btnDatePicker.setOnClickListener((View.OnClickListener) this);
             btnTimePicker.setOnClickListener((View.OnClickListener) this);
@@ -247,6 +253,8 @@ public class MeetingActivity extends AppCompatActivity implements
         madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner1.setAdapter(madapter);
+        spinner2.setAdapter(madapter);
+        spinner3.setAdapter(madapter);
     }
 
 
@@ -305,11 +313,13 @@ public class MeetingActivity extends AppCompatActivity implements
         resetUIForMeeting();
 
         //18-9-2017 18:49
-        Meeting_prams[2]= String.valueOf(txtCancel.getText());
+       // Meeting_prams[2]= String.valueOf(txtCancel.getText());
+       String subject = spinner2.getSelectedItem().toString();
+        String id = (String) subjct_id.get(subject);
 
         new GraphServiceController()
                 .DeleteMeeting(
-                          MeetingActivity.this, Meeting_prams[2],Meeting_prams[0] , Meeting_prams[1],
+                          subject, id,
                         new ICallback<JsonObject>() {
 
                             @Override
