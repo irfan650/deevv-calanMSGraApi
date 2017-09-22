@@ -99,6 +99,76 @@ class GraphServiceController extends MeetingActivity {
 }
 
 
+
+    public void FindMeeting(final MeetingActivity m, final String Subject, String start, String end, final ICallback<JsonObject> callback) {
+
+
+
+        Event event = createEventObject(Subject, start, end);
+        //final IEventCollectionPage eventRequest;
+        final List<Option> options = new LinkedList<>();
+
+        String start1 = "'" + new StringBuilder(start).insert(start.length(), "Z'").toString();
+        String end1 = "'" + new StringBuilder(end).insert(end.length(), "Z'").toString();
+
+        //options.add(new QueryOption("$filter", "Start/DateTime ge '2017-09-18T00:00:00Z' and End/DateTime lt '2017-9-30T23:00:00Z'"));
+
+        options.add(new QueryOption("$filter", "Start/DateTime ge " + start1 + " and End/DateTime lt " + end1));
+
+
+
+        mGraphServiceClient.getMe().getCalendar().getEvents().buildRequest(options).get(new ICallback<IEventCollectionPage>() {
+
+
+            @Override
+            public void success(IEventCollectionPage iEventCollectionPage) {
+
+                JsonObject ie = iEventCollectionPage.getRawObject();
+                final  List<Event> ev = iEventCollectionPage.getCurrentPage();
+                ArrayList<String> categoryList = new ArrayList<String>();
+
+
+                for (int i=0; i <= ev.size() - 1; i++ ) {
+                    String id = ev.get(i).id;
+                    String sbjct = ev.get(i).subject;
+                    Log.d("Subject, ID", sbjct + "    " + id);
+
+                    categoryList.add(sbjct);
+                    m.create_spinner(categoryList);
+                    m.spinner1.getSelectedItem().toString();
+
+                    if (Subject.equals(sbjct)) {
+                        mGraphServiceClient
+                                .getMe()
+                                .getEvents()
+                                .byId(id)
+                                .buildRequest()
+                                .delete(new ICallback<Void>() {
+                                    @Override
+                                    public void success(Void aVoid) {
+                                        callback.success(null);
+                                    }
+
+                                    @Override
+                                    public void failure(ClientException ex) {
+                                        callback.failure(ex);
+                                    }
+                                });
+                    }
+                }
+
+            }
+
+            @Override
+            public void failure(ClientException ex) {
+
+            }
+        });
+
+
+    }
+
+
     public void DeleteMeeting(final MeetingActivity m, final String Subject, String start, String end, final ICallback<JsonObject> callback) {
 
 

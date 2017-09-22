@@ -48,7 +48,7 @@ public class MeetingActivity extends AppCompatActivity implements
         private ProgressBar MeetingrogressBar;
         private String mGivenName;
         private TextView mConclusionTextView;
-        public static Spinner spinner1;
+        public  Spinner spinner1;
         Context context;
 
 
