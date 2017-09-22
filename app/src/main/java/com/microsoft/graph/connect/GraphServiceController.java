@@ -7,6 +7,8 @@ package com.microsoft.graph.connect;
 import android.app.DownloadManager;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,25 +33,27 @@ import org.joda.time.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import com.microsoft.graph.connect.MeetingActivity;
 
 /**
  * Handles the creation of the message and using the GraphServiceClient to
  * send the message. The app must have connected to Office 365 before using the
  * {@link #sendMail(String, String, String, ICallback)}method.
  */
-class GraphServiceController {
+class GraphServiceController extends MeetingActivity {
 
     private final IGraphServiceClient mGraphServiceClient;
-
     public GraphServiceController() {
         mGraphServiceClient = GraphServiceClientManager.getInstance().getGraphServiceClient();
 
     }
+
 
     /**
      * Sends an email message using the Microsoft Graph API on Office 365. The mail is sent
@@ -65,7 +69,6 @@ class GraphServiceController {
             final String body,
             final ICallback<Void> callback
     ) {
-
         // create the email message
         Message message = createMessage(subject, body, emailAddress);
         mGraphServiceClient.getMe().getSendMail(message, true).buildRequest().post(callback);
@@ -96,7 +99,7 @@ class GraphServiceController {
 }
 
 
-    public void DeleteMeeting(final String Subject, String start, String end, final ICallback<JsonObject> callback) {
+    public void DeleteMeeting(final MeetingActivity m, final String Subject, String start, String end, final ICallback<JsonObject> callback) {
 
 
 
@@ -110,9 +113,12 @@ class GraphServiceController {
         String start1 = "'" + new StringBuilder(start).insert(start.length(), "Z'").toString();
         String end1 = "'" + new StringBuilder(end).insert(end.length(), "Z'").toString();
 
-        //options.add(new QueryOption("$filter", "Start/DateTime ge '2017-09-19T00:00:00Z' and End/DateTime lt '2017-09-19T23:00:00Z'"));
+        //options.add(new QueryOption("$filter", "Start/DateTime ge '2017-09-18T00:00:00Z' and End/DateTime lt '2017-9-30T23:00:00Z'"));
 
         options.add(new QueryOption("$filter", "Start/DateTime ge " + start1 + " and End/DateTime lt " + end1));
+
+
+        //ArrayList<String> categoryList = new ArrayList<String>();
 
 
         mGraphServiceClient.getMe().getCalendar().getEvents().buildRequest(options).get(new ICallback<IEventCollectionPage>() {
@@ -123,11 +129,17 @@ class GraphServiceController {
 
                 JsonObject ie = iEventCollectionPage.getRawObject();
                 final  List<Event> ev = iEventCollectionPage.getCurrentPage();
+                ArrayList<String> categoryList = new ArrayList<String>();
+
 
                 for (int i=0; i <= ev.size() - 1; i++ ) {
                     String id = ev.get(i).id;
                     String sbjct = ev.get(i).subject;
                     Log.d("Subject, ID", sbjct + "    " + id);
+
+                    categoryList.add(sbjct);
+                    m.create_spinner(categoryList);
+
                     if (Subject.equals(sbjct)) {
                         mGraphServiceClient
                                 .getMe()
@@ -165,9 +177,18 @@ class GraphServiceController {
     public void UpdateMeeting(final String Subject, String start, String end, final ICallback<JsonObject> callback) {
 
         final List<Option> options = new LinkedList<>();
-        options.add(new QueryOption("$select", "startdatetime=2017-09-15T21:24:06.836Z &enddatetime=2017-09-25T21:24:06.836Z"));
+        //options.add(new QueryOption("$select", "startdatetime=2017-09-15T21:24:06.836Z &enddatetime=2017-09-25T21:24:06.836Z"));
 
-        mGraphServiceClient.getMe().getCalendar().getEvents().buildRequest().get(new ICallback<IEventCollectionPage>() {
+        String start1 = "'" + new StringBuilder(start).insert(start.length(), "Z'").toString();
+        String end1 = "'" + new StringBuilder(end).insert(end.length(), "Z'").toString();
+
+        //options.add(new QueryOption("$filter", "Start/DateTime ge '2017-09-19T00:00:00Z' and End/DateTime lt '2017-09-19T23:00:00Z'"));
+
+        options.add(new QueryOption("$filter", "Start/DateTime ge " + start1 + " and End/DateTime lt " + end1));
+
+
+
+        mGraphServiceClient.getMe().getCalendar().getEvents().buildRequest(options).get(new ICallback<IEventCollectionPage>() {
 
 
             @Override
@@ -264,14 +285,18 @@ class GraphServiceController {
 
         // set a location
         Location location = new Location();
-        location.displayName = "ROOM1";
+        location.displayName = "room1";
         event.location = location;
 
         // add attendees
         Attendee attendee = new Attendee();
         attendee.type = AttendeeType.required;
         attendee.emailAddress = new EmailAddress();
-        attendee.emailAddress.address = "irfan.ifi650@gmail.com";
+        //attendee.emailAddress.address = "irfan.ifi650@gmail.com";
+        //attendee.emailAddress.address = "meetingroom@scheduledisplay.com";
+        attendee.emailAddress.address = "irfanulhaqqureshi@outlook.com";
+
+
         event.attendees = Collections.singletonList(attendee);
 
         // add a msg

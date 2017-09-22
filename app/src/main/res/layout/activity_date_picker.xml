@@ -17,11 +17,12 @@
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:text="Create A meeting"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp" />
 
     <!--<TextView-->
         <!--android:id="@+id/descriptionTextView"-->
@@ -83,8 +84,8 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/in_date"
-        android:layout_marginTop="82dp"
-        android:layout_alignParentTop="true"
+        android:layout_marginTop="48dp"
+        android:layout_below="@+id/titleTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -128,8 +129,8 @@
         android:id="@+id/btn_create"
         android:onClick="onCreateMeetingButtonClick"
         android:layout_below="@+id/btn_time"
-        android:layout_alignLeft="@+id/btn_time"
-        android:layout_alignStart="@+id/btn_time" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <!--<Button-->
     <!--android:id="@+id/create_meeting"-->
@@ -148,7 +149,8 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/subj_cancel"
-        android:layout_below="@+id/subj_create"
+        android:layout_marginTop="62dp"
+        android:layout_below="@+id/btn_create"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -158,15 +160,16 @@
         android:text="Cancel Meeting"
         android:id="@+id/btn_cancel"
         android:onClick="onDeleteMeetingButtonClick"
-        android:layout_below="@+id/btn_create"
-        android:layout_alignLeft="@+id/btn_create"
-        android:layout_alignStart="@+id/btn_create" />
+        android:layout_alignTop="@+id/subj_cancel"
+        android:layout_toRightOf="@+id/subj_cancel"
+        android:layout_toEndOf="@+id/subj_cancel"
+        android:layout_marginTop="12dp" />
 
     <EditText
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/subj_update"
-        android:layout_below="@+id/subj_cancel"
+        android:layout_alignTop="@+id/btn_update"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
     <Button
@@ -177,6 +180,16 @@
         android:id="@+id/btn_update"
         android:layout_below="@+id/btn_cancel"
         android:layout_alignLeft="@+id/btn_cancel"
-        android:layout_alignStart="@+id/btn_cancel" />
+        android:layout_alignStart="@+id/btn_cancel"
+        android:layout_marginTop="26dp" />
+
+    <Spinner
+        android:id="@+id/spinner1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_cancel"
+        android:layout_alignRight="@+id/btn_cancel"
+        android:layout_alignEnd="@+id/btn_cancel"
+        android:layout_marginBottom="14dp" />
 
 </RelativeLayout>
