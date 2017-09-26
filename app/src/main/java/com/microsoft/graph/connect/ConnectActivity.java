@@ -93,6 +93,7 @@ public class ConnectActivity extends AppCompatActivity implements AuthorizationS
             // get the UserInfo from the auth response
             JSONObject claims = AuthenticationManager.getInstance().getClaims(tokenResponse.idToken);
 
+            Log.d("TOKEN SDK", tokenResponse.accessToken);
             String name = "";
             String preferredUsername = "";
             try {

@@ -11,5 +11,5 @@ public class Constants {
     // Update these two constants with the values for your application:
     public static String CLIENT_ID = "17bf427c-06bb-4894-9fe8-661f7893cac8";
     public static final String REDIRECT_URI = "https://login.microsoftonline.com/common/oauth2/nativeclient";
-    public static final String SCOPES = "openid profile mail.send mail.read Calendars.Read Calendars.Read.Shared Calendars.ReadWrite Calendars.ReadWrite.Shared";
+    public static final String SCOPES = "openid profile mail.send mail.read Calendars.Read Calendars.Read.Shared Calendars.ReadWrite Calendars.ReadWrite.Shared User.ReadWrite.All User.Invite.All";
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by irfan on 18.09.17.
@@ -48,9 +51,12 @@ public class MeetingActivity extends AppCompatActivity implements
         private ProgressBar MeetingrogressBar;
         private String mGivenName;
         private TextView mConclusionTextView;
-        public static Spinner spinner1;
+        public  Spinner spinner1, spinner2, spinner3;
         Context context;
+         Map<String,String> subjct_id =  new HashMap<String,String>();
+    Map<String,String> id_subject =  new HashMap<String,String>();
 
+         ArrayList<String> categoryList = new ArrayList<String>();
 
     Button btnDatePicker, btnTimePicker, btnCreate, btnCancel, btnUpdate;
     EditText txtDate, txtTime, txtCreate, txtCancel, txtUpdate;
@@ -63,7 +69,7 @@ public class MeetingActivity extends AppCompatActivity implements
     @Override
         protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_date_picker);
+        setContentView(R.layout.activity_date_picker_spinner);
 
 
         // find the views
@@ -76,6 +82,8 @@ public class MeetingActivity extends AppCompatActivity implements
         /// Spinner
 
           spinner1 = (Spinner) findViewById(R.id.spinner1);
+        spinner2 = (Spinner) findViewById(R.id.spinner2);
+        spinner3 = (Spinner) findViewById(R.id.spinner3);
 //        ArrayList<String> categoryList = new ArrayList<String>();
 //        categoryList.add("1");
 //        categoryList.add("2");
@@ -102,12 +110,12 @@ public class MeetingActivity extends AppCompatActivity implements
             txtDate=(EditText)findViewById(R.id.in_date);
             txtTime=(EditText)findViewById(R.id.in_time);
             txtCreate=(EditText)findViewById(R.id.subj_create);
-            txtCancel=(EditText)findViewById(R.id.subj_cancel);
-            txtUpdate=(EditText)findViewById(R.id.subj_update);
+//            txtCancel=(EditText)findViewById(R.id.subj_cancel);
+//            txtUpdate=(EditText)findViewById(R.id.subj_update);
 
             txtCreate.setText("TEST MEETING");
-            txtCancel.setText("TEST MEETING");
-            txtUpdate.setText("TEST MEETING");
+//            txtCancel.setText("TEST MEETING");
+//            txtUpdate.setText("TEST MEETING");
 
             btnDatePicker.setOnClickListener((View.OnClickListener) this);
             btnTimePicker.setOnClickListener((View.OnClickListener) this);
@@ -238,15 +246,27 @@ public class MeetingActivity extends AppCompatActivity implements
 
     }
 
-    public void create_spinner(ArrayList<String> categoryList){
+    public void  clear_spiner () {
 
-        //ArrayList<String> categoryList = new ArrayList<String>();
+        ArrayList<String> categoryList_emty = new ArrayList<String>();
+
+        categoryList.clear();
+
+        spinner1.setAdapter(new ArrayAdapter<String>(MeetingActivity.this, android.R.layout.simple_spinner_item, categoryList_emty));
+        spinner2.setAdapter(new ArrayAdapter<String>(MeetingActivity.this, android.R.layout.simple_spinner_item, categoryList_emty));
+        spinner3.setAdapter(new ArrayAdapter<String>(MeetingActivity.this, android.R.layout.simple_spinner_item, categoryList_emty));
+    }
+
+
+    public void create_spinner(ArrayList<String> categoryList){
 
         ArrayAdapter<String> madapter = new ArrayAdapter<String>(MeetingActivity.this
                 , android.R.layout.simple_list_item_1, categoryList);
         madapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner1.setAdapter(madapter);
+        spinner2.setAdapter(madapter);
+        spinner3.setAdapter(madapter);
     }
 
 
@@ -261,7 +281,7 @@ public class MeetingActivity extends AppCompatActivity implements
          *
          * @param v The view.
          */
-    public void onCreateMeetingButtonClick(View v) {
+    public void onCreateMeetingButtonClick(View v) throws ParseException {
         resetUIForMeeting();
 
         //Prepare body message and insert name of sender
@@ -301,15 +321,60 @@ public class MeetingActivity extends AppCompatActivity implements
 
 
 
+    public void onFindMeetingButtonClick(View v) {
+        resetUIForMeeting();
+        clear_spiner();
+
+
+        //18-9-2017 18:49
+        //Meeting_prams[2]= String.valueOf(txtUpdate.getText());
+
+
+
+
+        new GraphServiceController()
+                .FindMeeting(
+                        MeetingActivity.this, Meeting_prams[2],Meeting_prams[0] , Meeting_prams[1],
+                        new ICallback<Void>() {
+
+//                            @Override
+//                            public void success(ICallback result) {
+//
+//                                MeetingDeleteSuccessUI();
+//
+//                            }
+
+                            @Override
+                            public void success(Void aVoid) {
+
+
+                                Log.d("Calback Find", "Success");
+                                MeetingFindSuccessUI();
+
+                            }
+
+                            @Override
+                            public void failure(ClientException ex) {
+
+                                showCreatMeetingErrorUI();
+                            }
+                        }
+                );
+
+    }
+
+
     public void onDeleteMeetingButtonClick(View v) {
         resetUIForMeeting();
 
         //18-9-2017 18:49
-        Meeting_prams[2]= String.valueOf(txtCancel.getText());
+       // Meeting_prams[2]= String.valueOf(txtCancel.getText());
+       String subject = spinner2.getSelectedItem().toString();
+        String id = (String) subjct_id.get(subject);
 
         new GraphServiceController()
                 .DeleteMeeting(
-                          MeetingActivity.this, Meeting_prams[2],Meeting_prams[0] , Meeting_prams[1],
+                          subject, id,
                         new ICallback<JsonObject>() {
 
                             @Override
@@ -332,12 +397,12 @@ public class MeetingActivity extends AppCompatActivity implements
     public void onUpdateMeetingButtonClick(View v) {
         resetUIForMeeting();
 
-        //18-9-2017 18:49
-        Meeting_prams[2]= String.valueOf(txtUpdate.getText());
+        String subject = spinner3.getSelectedItem().toString();
+        String id = (String) subjct_id.get(subject);
 
         new GraphServiceController()
                 .UpdateMeeting(
-                        Meeting_prams[2],Meeting_prams[0] , Meeting_prams[1],
+                        subject,id ,
                         new ICallback<JsonObject>() {
 
                             @Override
@@ -421,7 +486,16 @@ public class MeetingActivity extends AppCompatActivity implements
         Toast.makeText(MeetingActivity.this,
                 "Meeting UPDATED",
                 Toast.LENGTH_SHORT).show();
+
     }
+    private void MeetingFindSuccessUI() {
+        MeetingrogressBar.setVisibility(View.GONE);
+        BcreateMeeting.setVisibility(View.VISIBLE);
+        mConclusionTextView.setText("Meeting Find successfully");
+        mConclusionTextView.setVisibility(View.VISIBLE);
+        Toast.makeText(MeetingActivity.this,
+                "Meeting Find",
+                Toast.LENGTH_SHORT).show(); }
 
     private void showCreatMeetingErrorUI() {
         MeetingrogressBar.setVisibility(View.GONE);
