@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,8 +54,9 @@ public class MeetingActivity extends AppCompatActivity implements
         public  Spinner spinner1, spinner2, spinner3;
         Context context;
          Map<String,String> subjct_id =  new HashMap<String,String>();
+    Map<String,String> id_subject =  new HashMap<String,String>();
 
-
+         ArrayList<String> categoryList = new ArrayList<String>();
 
     Button btnDatePicker, btnTimePicker, btnCreate, btnCancel, btnUpdate;
     EditText txtDate, txtTime, txtCreate, txtCancel, txtUpdate;
@@ -244,9 +246,19 @@ public class MeetingActivity extends AppCompatActivity implements
 
     }
 
-    public void create_spinner(ArrayList<String> categoryList){
+    public void  clear_spiner () {
 
-        //ArrayList<String> categoryList = new ArrayList<String>();
+        ArrayList<String> categoryList_emty = new ArrayList<String>();
+
+        categoryList.clear();
+
+        spinner1.setAdapter(new ArrayAdapter<String>(MeetingActivity.this, android.R.layout.simple_spinner_item, categoryList_emty));
+        spinner2.setAdapter(new ArrayAdapter<String>(MeetingActivity.this, android.R.layout.simple_spinner_item, categoryList_emty));
+        spinner3.setAdapter(new ArrayAdapter<String>(MeetingActivity.this, android.R.layout.simple_spinner_item, categoryList_emty));
+    }
+
+
+    public void create_spinner(ArrayList<String> categoryList){
 
         ArrayAdapter<String> madapter = new ArrayAdapter<String>(MeetingActivity.this
                 , android.R.layout.simple_list_item_1, categoryList);
@@ -269,7 +281,7 @@ public class MeetingActivity extends AppCompatActivity implements
          *
          * @param v The view.
          */
-    public void onCreateMeetingButtonClick(View v) {
+    public void onCreateMeetingButtonClick(View v) throws ParseException {
         resetUIForMeeting();
 
         //Prepare body message and insert name of sender
@@ -309,6 +321,49 @@ public class MeetingActivity extends AppCompatActivity implements
 
 
 
+    public void onFindMeetingButtonClick(View v) {
+        resetUIForMeeting();
+        clear_spiner();
+
+
+        //18-9-2017 18:49
+        //Meeting_prams[2]= String.valueOf(txtUpdate.getText());
+
+
+
+
+        new GraphServiceController()
+                .FindMeeting(
+                        MeetingActivity.this, Meeting_prams[2],Meeting_prams[0] , Meeting_prams[1],
+                        new ICallback<Void>() {
+
+//                            @Override
+//                            public void success(ICallback result) {
+//
+//                                MeetingDeleteSuccessUI();
+//
+//                            }
+
+                            @Override
+                            public void success(Void aVoid) {
+
+
+                                Log.d("Calback Find", "Success");
+                                MeetingFindSuccessUI();
+
+                            }
+
+                            @Override
+                            public void failure(ClientException ex) {
+
+                                showCreatMeetingErrorUI();
+                            }
+                        }
+                );
+
+    }
+
+
     public void onDeleteMeetingButtonClick(View v) {
         resetUIForMeeting();
 
@@ -342,12 +397,12 @@ public class MeetingActivity extends AppCompatActivity implements
     public void onUpdateMeetingButtonClick(View v) {
         resetUIForMeeting();
 
-        //18-9-2017 18:49
-        Meeting_prams[2]= String.valueOf(txtUpdate.getText());
+        String subject = spinner3.getSelectedItem().toString();
+        String id = (String) subjct_id.get(subject);
 
         new GraphServiceController()
                 .UpdateMeeting(
-                        Meeting_prams[2],Meeting_prams[0] , Meeting_prams[1],
+                        subject,id ,
                         new ICallback<JsonObject>() {
 
                             @Override
@@ -431,7 +486,16 @@ public class MeetingActivity extends AppCompatActivity implements
         Toast.makeText(MeetingActivity.this,
                 "Meeting UPDATED",
                 Toast.LENGTH_SHORT).show();
+
     }
+    private void MeetingFindSuccessUI() {
+        MeetingrogressBar.setVisibility(View.GONE);
+        BcreateMeeting.setVisibility(View.VISIBLE);
+        mConclusionTextView.setText("Meeting Find successfully");
+        mConclusionTextView.setVisibility(View.VISIBLE);
+        Toast.makeText(MeetingActivity.this,
+                "Meeting Find",
+                Toast.LENGTH_SHORT).show(); }
 
     private void showCreatMeetingErrorUI() {
         MeetingrogressBar.setVisibility(View.GONE);
